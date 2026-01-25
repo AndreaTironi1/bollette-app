@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bollette Analyzer
 
-## Getting Started
+Applicazione web per analizzare bollette di gas, luce, telefonia e altro, estraendo automaticamente i dati e esportandoli in formato Excel.
 
-First, run the development server:
+## Funzionalita
+
+- **Upload PDF**: Carica da 1 a 5 bollette in formato PDF
+- **Analisi AI**: Utilizza Claude AI (Haiku, Sonnet, Opus) per estrarre i dati
+- **Export Excel**: Esporta i dati estratti in un file .xlsx
+
+## Dati Estratti
+
+| Campo | Descrizione |
+|-------|-------------|
+| Tipologia Utenza | GAS / LUCE / TELEFONIA / ALTRO |
+| Denominazione Immobile | Nome dell'immobile o intestatario |
+| Indirizzo | Via e Numero Civico |
+| Contatore | Codice contatore, POD o PDR |
+| Consumo | Consumo con unita di misura |
+| Periodo di Riferimento | Anno / Mese |
+| Costo | Importo totale in euro |
+
+## Tecnologie
+
+- Next.js 16
+- TypeScript
+- Tailwind CSS
+- Anthropic Claude API
+- XLSX per export Excel
+- Lucide React per le icone
+
+## Installazione Locale
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Apri [http://localhost:3000](http://localhost:3000) nel browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy su Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Collegare il repository GitHub a Vercel
+2. Deploy automatico ad ogni push
 
-## Learn More
+## Credenziali di Accesso
 
-To learn more about Next.js, take a look at the following resources:
+- **Username**: `UtenteBollette`
+- **Password**: `Bollette2026!@`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Versione
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**v1.0.0**

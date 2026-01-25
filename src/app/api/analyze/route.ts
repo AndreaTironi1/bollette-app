@@ -7,26 +7,33 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-const EXTRACTION_PROMPT = `Analizza questa bolletta PDF e estrai le seguenti informazioni in formato JSON.
-Rispondi SOLO con un oggetto JSON valido, senza altri testi o spiegazioni.
+const EXTRACTION_PROMPT = `Analizza questo documento PDF e estrai TUTTE le bollette presenti.
+Un PDF può contenere una o più bollette. Estrai i dati di OGNI bolletta trovata.
 
-Il JSON deve avere esattamente questa struttura:
-{
-  "tipologia_utenza": "GAS" | "LUCE" | "TELEFONIA" | "ALTRO",
-  "denominazione_immobile": "nome dell'immobile o intestatario",
-  "indirizzo": "via e numero civico completo",
-  "contatore": "codice/numero contatore o POD/PDR",
-  "consumo": "consumo con unità di misura (es: 150 kWh, 200 Smc)",
-  "periodo_riferimento": "periodo in formato ANNO/MESE o range date",
-  "costo": "importo totale in euro (es: 125,50)"
-}
+Rispondi SOLO con un array JSON valido, senza altri testi o spiegazioni.
+Se c'è una sola bolletta, restituisci comunque un array con un elemento.
+
+L'array deve contenere oggetti con questa struttura:
+[
+  {
+    "tipologia_utenza": "GAS" | "LUCE" | "TELEFONIA" | "ALTRO",
+    "denominazione_immobile": "nome dell'immobile o intestatario",
+    "indirizzo": "via e numero civico completo",
+    "contatore": "codice/numero contatore o POD/PDR",
+    "consumo": "consumo con unità di misura (es: 150 kWh, 200 Smc)",
+    "periodo_riferimento": "periodo in formato ANNO/MESE o range date",
+    "costo": "importo totale in euro (es: 125,50)"
+  }
+]
 
 Se un campo non è presente o non è chiaro, usa "N/D" (Non Disponibile).
 Per tipologia_utenza:
 - GAS: bollette gas metano, GPL
 - LUCE: bollette elettricità, energia elettrica
 - TELEFONIA: bollette telefono fisso, mobile, internet
-- ALTRO: acqua, rifiuti, altri servizi`;
+- ALTRO: acqua, rifiuti, altri servizi
+
+IMPORTANTE: Se il documento contiene più bollette (es. riepilogo mensile, bollette multiple), estraile TUTTE come elementi separati dell'array.`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,7 +62,7 @@ export async function POST(request: NextRequest) {
     // Call Anthropic API with PDF
     const response = await anthropic.messages.create({
       model: LLM_MODELS[model],
-      max_tokens: 1024,
+      max_tokens: 4096,
       messages: [
         {
           role: 'user',
@@ -87,7 +94,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse JSON response
-    let extractedData: BollettaData;
+    let extractedData: BollettaData[];
     try {
       // Try to extract JSON from the response (handle potential markdown code blocks)
       let jsonText = textContent.text;
@@ -95,8 +102,17 @@ export async function POST(request: NextRequest) {
       if (jsonMatch) {
         jsonText = jsonMatch[1];
       }
-      extractedData = JSON.parse(jsonText.trim());
-      extractedData.file_origine = file.name;
+
+      const parsed = JSON.parse(jsonText.trim());
+
+      // Ensure it's an array
+      extractedData = Array.isArray(parsed) ? parsed : [parsed];
+
+      // Add file origin to each bolletta
+      extractedData = extractedData.map((bolletta) => ({
+        ...bolletta,
+        file_origine: file.name
+      }));
     } catch {
       return NextResponse.json(
         {

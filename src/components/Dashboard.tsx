@@ -54,13 +54,14 @@ export default function Dashboard() {
   };
 
   const handleExport = () => {
-    const successData = results
-      .filter((r) => r.success && r.data)
-      .map((r) => r.data as BollettaData);
+    // Flatten all bollette from all successful results
+    const allBollette: BollettaData[] = results
+      .filter((r) => r.success && r.data && r.data.length > 0)
+      .flatMap((r) => r.data as BollettaData[]);
 
-    if (successData.length > 0) {
+    if (allBollette.length > 0) {
       const timestamp = new Date().toISOString().slice(0, 10);
-      downloadExcel(successData, `bollette_${timestamp}.xlsx`);
+      downloadExcel(allBollette, `bollette_${timestamp}.xlsx`);
     }
   };
 
@@ -70,7 +71,10 @@ export default function Dashboard() {
     setCurrentFile('');
   };
 
-  const successCount = results.filter((r) => r.success).length;
+  // Count total bollette extracted (not files)
+  const totalBollette = results
+    .filter((r) => r.success && r.data)
+    .reduce((sum, r) => sum + (r.data?.length || 0), 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -84,7 +88,7 @@ export default function Dashboard() {
               Analizza le tue Bollette
             </h2>
             <p className="text-gray-600 mt-2">
-              Carica da 1 a 5 bollette in PDF ed esporta i dati in Excel
+              Carica da 1 a 5 PDF ed esporta i dati in Excel (ogni PDF può contenere più bollette)
             </p>
           </div>
 
@@ -125,14 +129,14 @@ export default function Dashboard() {
               )}
             </button>
 
-            {successCount > 0 && (
+            {totalBollette > 0 && (
               <>
                 <button
                   onClick={handleExport}
                   className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold bg-green-600 text-white hover:bg-green-700 transition-all shadow-lg hover:shadow-xl"
                 >
                   <Download className="w-5 h-5" />
-                  Esporta Excel ({successCount})
+                  Esporta Excel ({totalBollette})
                 </button>
 
                 <button

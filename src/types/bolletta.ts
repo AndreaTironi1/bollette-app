@@ -11,7 +11,7 @@ export interface BollettaData {
 
 export interface AnalysisResult {
   success: boolean;
-  data?: BollettaData;
+  data?: BollettaData[];
   error?: string;
   fileName: string;
 }

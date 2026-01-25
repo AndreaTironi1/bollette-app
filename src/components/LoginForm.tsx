@@ -3,22 +3,31 @@
 import { useState } from 'react';
 import { validateCredentials } from '@/lib/auth';
 import { useAuth } from '@/context/AuthContext';
-import { Lock, User, AlertCircle } from 'lucide-react';
+import { Lock, User, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
-    if (validateCredentials(username, password)) {
-      login(username);
-    } else {
-      setError('Credenziali non valide');
+    try {
+      const isValid = await validateCredentials(username, password);
+      if (isValid) {
+        login(username);
+      } else {
+        setError('Credenziali non valide');
+      }
+    } catch {
+      setError('Errore durante l\'autenticazione');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -55,6 +64,7 @@ export default function LoginForm() {
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
                 placeholder="Inserisci username"
                 required
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -73,15 +83,24 @@ export default function LoginForm() {
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
                 placeholder="Inserisci password"
                 required
+                disabled={isLoading}
               />
             </div>
           </div>
 
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-200 shadow-lg hover:shadow-xl"
+            disabled={isLoading}
+            className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Accedi
+            {isLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Accesso in corso...
+              </>
+            ) : (
+              'Accedi'
+            )}
           </button>
         </form>
       </div>

@@ -12,7 +12,7 @@ import { Play, Download, Loader2, RefreshCw } from 'lucide-react';
 
 export default function Dashboard() {
   const [files, setFiles] = useState<File[]>([]);
-  const [selectedModel, setSelectedModel] = useState<LLMModelKey>('sonnet');
+  const [selectedModel, setSelectedModel] = useState<LLMModelKey>('haiku');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<AnalysisResult[]>([]);
   const [currentFile, setCurrentFile] = useState<string>('');

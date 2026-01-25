@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { LLM_MODELS, LLMModelKey } from '@/lib/constants';
-import { BollettaData } from '@/types/bolletta';
+import { BollettaData, TokenUsage } from '@/types/bolletta';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -84,11 +84,17 @@ export async function POST(request: NextRequest) {
       ],
     });
 
+    // Extract token usage
+    const tokenUsage: TokenUsage = {
+      input_tokens: response.usage.input_tokens,
+      output_tokens: response.usage.output_tokens,
+    };
+
     // Extract text response
     const textContent = response.content.find((c) => c.type === 'text');
     if (!textContent || textContent.type !== 'text') {
       return NextResponse.json(
-        { success: false, error: 'Risposta non valida dal modello', fileName: file.name },
+        { success: false, error: 'Risposta non valida dal modello', fileName: file.name, tokenUsage },
         { status: 500 }
       );
     }
@@ -119,6 +125,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: 'Impossibile interpretare la risposta del modello',
           fileName: file.name,
+          tokenUsage,
           rawResponse: textContent.text
         },
         { status: 500 }
@@ -129,6 +136,7 @@ export async function POST(request: NextRequest) {
       success: true,
       data: extractedData,
       fileName: file.name,
+      tokenUsage,
     });
 
   } catch (error) {

@@ -9,9 +9,15 @@ export interface BollettaData {
   file_origine: string;
 }
 
+export interface TokenUsage {
+  input_tokens: number;
+  output_tokens: number;
+}
+
 export interface AnalysisResult {
   success: boolean;
   data?: BollettaData[];
   error?: string;
   fileName: string;
+  tokenUsage?: TokenUsage;
 }

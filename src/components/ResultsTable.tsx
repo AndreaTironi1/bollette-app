@@ -1,7 +1,7 @@
 'use client';
 
 import { BollettaData, AnalysisResult } from '@/types/bolletta';
-import { CheckCircle, XCircle, AlertTriangle, FileText } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, FileText, Zap } from 'lucide-react';
 
 interface ResultsTableProps {
   results: AnalysisResult[];
@@ -17,6 +17,10 @@ export default function ResultsTable({ results }: ResultsTableProps) {
   // Count files processed vs bollette found
   const filesProcessed = successResults.length;
   const totalBollette = allBollette.length;
+
+  // Calculate total token usage
+  const totalInputTokens = results.reduce((sum, r) => sum + (r.tokenUsage?.input_tokens || 0), 0);
+  const totalOutputTokens = results.reduce((sum, r) => sum + (r.tokenUsage?.output_tokens || 0), 0);
 
   if (results.length === 0) return null;
 
@@ -44,7 +48,45 @@ export default function ResultsTable({ results }: ResultsTableProps) {
             </span>
           </div>
         )}
+        {(totalInputTokens > 0 || totalOutputTokens > 0) && (
+          <div className="flex items-center gap-2">
+            <Zap className="w-5 h-5 text-purple-500" />
+            <span className="text-sm text-gray-700">
+              <strong>{totalInputTokens.toLocaleString()}</strong> input / <strong>{totalOutputTokens.toLocaleString()}</strong> output tokens
+            </span>
+          </div>
+        )}
       </div>
+
+      {/* Token Usage per File */}
+      {results.some(r => r.tokenUsage) && (
+        <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+          <h4 className="text-sm font-semibold text-purple-800 mb-3 flex items-center gap-2">
+            <Zap className="w-4 h-4" />
+            Dettaglio Token per File
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {results.map((result, index) => (
+              <div
+                key={index}
+                className={`p-3 rounded-lg ${result.success ? 'bg-white' : 'bg-red-50'}`}
+              >
+                <p className="text-xs font-medium text-gray-700 truncate" title={result.fileName}>
+                  {result.fileName}
+                </p>
+                {result.tokenUsage ? (
+                  <div className="mt-1 text-xs text-gray-500">
+                    <span className="text-purple-600 font-mono">{result.tokenUsage.input_tokens.toLocaleString()}</span> in /
+                    <span className="text-purple-600 font-mono ml-1">{result.tokenUsage.output_tokens.toLocaleString()}</span> out
+                  </div>
+                ) : (
+                  <div className="mt-1 text-xs text-gray-400">N/D</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Error Messages */}
       {errorResults.length > 0 && (

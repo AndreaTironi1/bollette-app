@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
-import { LLM_MODELS, LLMModelKey, ANTHROPIC_API_KEY } from '@/lib/constants';
+import { LLM_MODELS, LLMModelKey } from '@/lib/constants';
 import { BollettaData } from '@/types/bolletta';
 
 const anthropic = new Anthropic({
-  apiKey: ANTHROPIC_API_KEY,
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 const EXTRACTION_PROMPT = `Analizza questa bolletta PDF e estrai le seguenti informazioni in formato JSON.

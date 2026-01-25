@@ -7,5 +7,3 @@ export const LLM_MODELS = {
 } as const;
 
 export type LLMModelKey = keyof typeof LLM_MODELS;
-
-export const ANTHROPIC_API_KEY = 'SUPERKEYSUPERKEYSUPERKEY';

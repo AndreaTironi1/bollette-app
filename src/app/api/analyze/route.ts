@@ -16,7 +16,7 @@ Se c'è una sola bolletta, restituisci comunque un array con un elemento.
 L'array deve contenere oggetti con questa struttura:
 [
   {
-    "tipologia_utenza": "GAS" | "LUCE" | "TELEFONIA" | "ALTRO",
+    "tipologia_utenza": "GAS" | "LUCE" | "ACQUA" | "TELEFONIA" | "ALTRO",
     "denominazione_immobile": "nome dell'immobile o intestatario",
     "indirizzo": "via e numero civico completo",
     "contatore": "codice/numero contatore o POD/PDR",
@@ -30,8 +30,9 @@ Se un campo non è presente o non è chiaro, usa "N/D" (Non Disponibile).
 Per tipologia_utenza:
 - GAS: bollette gas metano, GPL
 - LUCE: bollette elettricità, energia elettrica
+- ACQUA: bollette acquedotto, servizio idrico
 - TELEFONIA: bollette telefono fisso, mobile, internet
-- ALTRO: acqua, rifiuti, altri servizi
+- ALTRO: rifiuti, altri servizi
 
 IMPORTANTE: Se il documento contiene più bollette (es. riepilogo mensile, bollette multiple), estraile TUTTE come elementi separati dell'array.`;
 

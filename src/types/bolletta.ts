@@ -1,5 +1,5 @@
 export interface BollettaData {
-  tipologia_utenza: 'GAS' | 'LUCE' | 'TELEFONIA' | 'ALTRO';
+  tipologia_utenza: 'GAS' | 'LUCE' | 'ACQUA' | 'TELEFONIA' | 'ALTRO';
   denominazione_immobile: string;
   indirizzo: string;
   contatore: string;

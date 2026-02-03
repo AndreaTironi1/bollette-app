@@ -1,13 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import { BollettaData, AnalysisResult } from '@/types/bolletta';
-import { CheckCircle, XCircle, AlertTriangle, FileText, Zap } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, FileText, Zap, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ResultsTableProps {
   results: AnalysisResult[];
 }
 
 export default function ResultsTable({ results }: ResultsTableProps) {
+  const [showTokenDetails, setShowTokenDetails] = useState(false);
   const successResults = results.filter((r) => r.success && r.data && r.data.length > 0);
   const errorResults = results.filter((r) => !r.success);
 
@@ -61,30 +63,40 @@ export default function ResultsTable({ results }: ResultsTableProps) {
       {/* Token Usage per File */}
       {results.some(r => r.tokenUsage) && (
         <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
-          <h4 className="text-sm font-semibold text-purple-800 mb-3 flex items-center gap-2">
+          <h4
+            className="text-sm font-semibold text-purple-800 flex items-center gap-2 cursor-pointer hover:text-purple-900 transition-colors select-none"
+            onClick={() => setShowTokenDetails(!showTokenDetails)}
+          >
             <Zap className="w-4 h-4" />
             Dettaglio Token per File
+            {showTokenDetails ? (
+              <ChevronUp className="w-4 h-4 ml-auto" />
+            ) : (
+              <ChevronDown className="w-4 h-4 ml-auto" />
+            )}
           </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {results.map((result, index) => (
-              <div
-                key={index}
-                className={`p-3 rounded-lg ${result.success ? 'bg-white' : 'bg-red-50'}`}
-              >
-                <p className="text-xs font-medium text-gray-700 truncate" title={result.fileName}>
-                  {result.fileName}
-                </p>
-                {result.tokenUsage ? (
-                  <div className="mt-1 text-xs text-gray-500">
-                    <span className="text-purple-600 font-mono">{result.tokenUsage.input_tokens.toLocaleString()}</span> in /
-                    <span className="text-purple-600 font-mono ml-1">{result.tokenUsage.output_tokens.toLocaleString()}</span> out
-                  </div>
-                ) : (
-                  <div className="mt-1 text-xs text-gray-400">N/D</div>
-                )}
-              </div>
-            ))}
-          </div>
+          {showTokenDetails && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
+              {results.map((result, index) => (
+                <div
+                  key={index}
+                  className={`p-3 rounded-lg ${result.success ? 'bg-white' : 'bg-red-50'}`}
+                >
+                  <p className="text-xs font-medium text-gray-700 truncate" title={result.fileName}>
+                    {result.fileName}
+                  </p>
+                  {result.tokenUsage ? (
+                    <div className="mt-1 text-xs text-gray-500">
+                      <span className="text-purple-600 font-mono">{result.tokenUsage.input_tokens.toLocaleString()}</span> in /
+                      <span className="text-purple-600 font-mono ml-1">{result.tokenUsage.output_tokens.toLocaleString()}</span> out
+                    </div>
+                  ) : (
+                    <div className="mt-1 text-xs text-gray-400">N/D</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -148,6 +160,8 @@ export default function ResultsTable({ results }: ResultsTableProps) {
                           ? 'bg-orange-100 text-orange-800'
                           : data.tipologia_utenza === 'LUCE'
                           ? 'bg-yellow-100 text-yellow-800'
+                          : data.tipologia_utenza === 'ACQUA'
+                          ? 'bg-cyan-100 text-cyan-800'
                           : data.tipologia_utenza === 'TELEFONIA'
                           ? 'bg-blue-100 text-blue-800'
                           : 'bg-gray-100 text-gray-800'

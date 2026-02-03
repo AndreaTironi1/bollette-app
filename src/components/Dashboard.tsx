@@ -88,13 +88,13 @@ export default function Dashboard() {
               Analizza le tue Bollette
             </h2>
             <p className="text-gray-600 mt-2">
-              Carica da 1 a 5 PDF ed esporta i dati in Excel (ogni PDF può contenere più bollette)
+              Carica da 1 a 10 PDF ed esporta i dati in Excel (ogni PDF può contenere più bollette)
             </p>
           </div>
 
           {/* Upload Section */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-            <FileUpload files={files} setFiles={setFiles} maxFiles={5} />
+            <FileUpload files={files} setFiles={setFiles} maxFiles={10} />
           </div>
 
           {/* Model Selector */}

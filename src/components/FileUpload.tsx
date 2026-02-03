@@ -9,7 +9,7 @@ interface FileUploadProps {
   maxFiles?: number;
 }
 
-export default function FileUpload({ files, setFiles, maxFiles = 5 }: FileUploadProps) {
+export default function FileUpload({ files, setFiles, maxFiles = 10 }: FileUploadProps) {
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState('');
 
